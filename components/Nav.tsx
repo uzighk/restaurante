@@ -21,27 +21,28 @@ export function Nav() {
     <header style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
       gap: 10, padding: isMobile ? "10px 14px" : "14px 22px", flexShrink: 0,
-      background: "rgba(12, 9, 7, 0.7)",
+      background: "rgba(255, 251, 244, 0.85)",
       backdropFilter: "blur(24px) saturate(160%)",
       WebkitBackdropFilter: "blur(24px) saturate(160%)",
-      borderBottom: "1px solid rgba(245,158,11,0.12)",
+      borderBottom: "1px solid #f3ead9",
     }}>
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none", flexShrink: 0 }}>
         <div style={{
           width: isMobile ? 30 : 32, height: isMobile ? 30 : 32, borderRadius: 10,
-          background: "linear-gradient(135deg, #f59e0b, #dc2626)",
+          background: "linear-gradient(135deg, #f97316, #ea580c)",
           display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 12px rgba(234,88,12,0.25)",
         }}>
-          <ForkKnife size={15} weight="duotone" color="#fff8e7" />
+          <ForkKnife size={15} weight="duotone" color="#ffffff" />
         </div>
         {!isMobile && (
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.01em" }}>Tavola</div>
-            <div style={{ fontSize: 10, color: "rgba(252,211,77,0.55)", marginTop: 1, whiteSpace: "nowrap" }}>Sistema de Restaurante</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#44362a", letterSpacing: "-0.01em" }}>Tavola</div>
+            <div style={{ fontSize: 10, color: "#978368", marginTop: 1, whiteSpace: "nowrap" }}>Sistema de Restaurante</div>
           </div>
         )}
         {isMobile && (
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.01em" }}>Tavola</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#44362a", letterSpacing: "-0.01em" }}>Tavola</div>
         )}
       </Link>
 
@@ -55,14 +56,14 @@ export function Nav() {
               style={{
                 display: "flex", alignItems: "center", gap: isMobile ? 0 : 7,
                 padding: isMobile ? "8px 10px" : "8px 14px", borderRadius: 11,
-                background: active ? "rgba(245,158,11,0.14)" : "transparent",
-                border: active ? "1px solid rgba(245,158,11,0.25)" : "1px solid transparent",
-                color: active ? "#fcd34d" : "rgba(252,211,77,0.55)",
+                background: active ? "#fff7ed" : "transparent",
+                border: active ? "1px solid #fdba74" : "1px solid transparent",
+                color: active ? "#c2410c" : "#978368",
                 fontSize: 12.5, fontWeight: active ? 600 : 500,
                 textDecoration: "none", transition: "all 0.15s", whiteSpace: "nowrap",
               }}
             >
-              <Icon size={14} weight={active ? "duotone" : "regular"} />
+              <Icon size={14} weight={active ? "duotone" : "regular"} color={active ? "#ea580c" : "#978368"} />
               {!isMobile && shortLabel}
               {isMobile && active && <span style={{ marginLeft: 6 }}>{shortLabel}</span>}
             </Link>
@@ -73,9 +74,9 @@ export function Nav() {
           title="Resetar dados"
           style={{
             marginLeft: 6, width: 32, height: 32, borderRadius: 10,
-            background: "transparent", border: "1px solid rgba(245,158,11,0.18)",
+            background: "#ffffff", border: "1px solid #f3ead9",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "rgba(252,211,77,0.5)", cursor: "pointer", flexShrink: 0,
+            color: "#978368", cursor: "pointer", flexShrink: 0,
           }}
         >
           <ArrowsClockwise size={12} />

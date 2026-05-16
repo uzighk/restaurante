@@ -55,26 +55,27 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
       {/* Header */}
       <header style={{
         padding: "20px 18px 14px", flexShrink: 0,
-        background: "linear-gradient(180deg, rgba(245,158,11,0.10) 0%, transparent 100%)",
-        borderBottom: "1px solid rgba(245,158,11,0.10)",
+        background: "linear-gradient(180deg, rgba(249,115,22,0.08) 0%, transparent 100%)",
+        borderBottom: "1px solid #f3ead9",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 11,
-            background: "linear-gradient(135deg, #f59e0b, #dc2626)",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
             display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 6px 16px rgba(234,88,12,0.25)",
           }}>
-            <ForkKnife size={17} weight="duotone" color="#fff8e7" />
+            <ForkKnife size={17} weight="duotone" color="#ffffff" />
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.01em" }}>Tavola</div>
-            <div style={{ fontSize: 10, color: "rgba(252,211,77,0.5)" }}>Mesa {mesa} · Bem-vindo</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#44362a", letterSpacing: "-0.01em" }}>Tavola</div>
+            <div style={{ fontSize: 10, color: "#978368" }}>Mesa {mesa} · Bem-vindo</div>
           </div>
         </div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em", marginTop: 8 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#44362a", letterSpacing: "-0.02em", marginTop: 8 }}>
           Cardápio
         </h1>
-        <p style={{ fontSize: 12, color: "rgba(252,211,77,0.55)", marginTop: 4 }}>
+        <p style={{ fontSize: 12, color: "#978368", marginTop: 4 }}>
           Faça seu pedido direto pela mesa. Nosso atendente confirma na cozinha.
         </p>
       </header>
@@ -95,9 +96,9 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
               }}
               style={{
                 padding: "7px 14px", borderRadius: 20,
-                background: active ? "rgba(245,158,11,0.18)" : "transparent",
-                border: `1px solid ${active ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.12)"}`,
-                color: active ? "#fcd34d" : "rgba(252,211,77,0.55)",
+                background: active ? "#fff7ed" : "#ffffff",
+                border: `1px solid ${active ? "#fdba74" : "#f3ead9"}`,
+                color: active ? "#c2410c" : "#978368",
                 fontSize: 12, fontWeight: active ? 600 : 500, cursor: "pointer",
                 whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.12s",
               }}
@@ -114,7 +115,7 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
           const items = menu.filter((m) => m.category === cat.id && m.available);
           return (
             <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: 26 }}>
-              <div style={{ fontSize: 11, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: "#978368", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 10 }}>
                 {cat.label}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -124,25 +125,26 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
                     onClick={() => setPicking(m)}
                     style={{
                       padding: 14, borderRadius: 16,
-                      background: "rgba(255,255,255,0.025)",
-                      border: "1px solid rgba(245,158,11,0.10)",
+                      background: "#ffffff",
+                      border: "1px solid #f3ead9",
                       display: "flex", alignItems: "center", gap: 14,
                       textAlign: "left", cursor: "pointer", width: "100%",
+                      boxShadow: "0 1px 3px rgba(68,54,42,0.04)",
                     }}
                   >
                     <div style={{
                       width: 56, height: 56, borderRadius: 14,
-                      background: "linear-gradient(135deg, rgba(245,158,11,0.18), rgba(220,38,38,0.10))",
-                      border: "1px solid rgba(245,158,11,0.2)",
+                      background: "linear-gradient(135deg, #fff7ed, #fef3c7)",
+                      border: "1px solid #fde68a",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0,
                     }}>
-                      <Sparkle size={22} weight="duotone" color="#fcd34d" />
+                      <Sparkle size={22} weight="duotone" color="#d97706" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#fef3c7", marginBottom: 3 }}>{m.name}</div>
-                      <div style={{ fontSize: 11.5, color: "rgba(252,211,77,0.55)", lineHeight: 1.45 }}>{m.description}</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: "#fcd34d", marginTop: 6 }}>{fmtBRL(m.price)}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#44362a", marginBottom: 3 }}>{m.name}</div>
+                      <div style={{ fontSize: 11.5, color: "#978368", lineHeight: 1.45 }}>{m.description}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#c2410c", marginTop: 6 }}>{fmtBRL(m.price)}</div>
                     </div>
                   </button>
                 ))}
@@ -161,11 +163,11 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
             position: "fixed", left: "50%", bottom: 22,
             transform: "translateX(-50%)",
             padding: "12px 22px", borderRadius: 99,
-            background: "linear-gradient(135deg, #f59e0b, #dc2626)",
-            color: "#fff8e7", fontSize: 13, fontWeight: 700, cursor: "pointer",
-            border: "1px solid rgba(245,158,11,0.5)",
+            background: "linear-gradient(135deg, #f97316, #ea580c)",
+            color: "#ffffff", fontSize: 13, fontWeight: 700, cursor: "pointer",
+            border: "1px solid #ea580c",
             display: "flex", alignItems: "center", gap: 10,
-            boxShadow: "0 12px 32px rgba(220,38,38,0.45)",
+            boxShadow: "0 12px 32px rgba(234,88,12,0.35)",
             zIndex: 30,
           }}
         >
@@ -184,12 +186,11 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
             style={{
               position: "fixed", left: "50%", bottom: 22, transform: "translateX(-50%)",
               padding: "14px 22px", borderRadius: 16,
-              background: "rgba(16,185,129,0.18)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(16,185,129,0.4)",
+              background: "#ecfdf5",
+              border: "1px solid #6ee7b7",
               display: "flex", alignItems: "center", gap: 10,
-              color: "#6ee7b7", fontSize: 13, fontWeight: 600,
-              zIndex: 40, boxShadow: "0 12px 32px rgba(16,185,129,0.25)",
+              color: "#047857", fontSize: 13, fontWeight: 600,
+              zIndex: 40, boxShadow: "0 12px 32px rgba(16,185,129,0.18)",
             }}
           >
             <CheckCircle size={16} weight="duotone" />
@@ -212,19 +213,19 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
               onClick={(e) => e.stopPropagation()}
               style={sheetStyle}
             >
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(252,211,77,0.2)", margin: "0 auto 14px" }} />
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#fef3c7" }}>{picking.name}</div>
-              <div style={{ fontSize: 12.5, color: "rgba(252,211,77,0.55)", marginTop: 4, marginBottom: 14, lineHeight: 1.5 }}>
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: "#e8dcc4", margin: "0 auto 14px" }} />
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#44362a" }}>{picking.name}</div>
+              <div style={{ fontSize: 12.5, color: "#978368", marginTop: 4, marginBottom: 14, lineHeight: 1.5 }}>
                 {picking.description}
               </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#fcd34d", marginBottom: 18 }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#c2410c", marginBottom: 18 }}>
                 {fmtBRL(picking.price * pickQty)}
               </div>
 
               <label style={lblSheet}>Quantidade</label>
               <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 8, marginBottom: 16 }}>
                 <button onClick={() => setPickQty(Math.max(1, pickQty - 1))} style={btnIconBig}><Minus size={16} /></button>
-                <span style={{ fontSize: 24, fontWeight: 700, color: "#fef3c7", minWidth: 36, textAlign: "center" }}>{pickQty}</span>
+                <span style={{ fontSize: 24, fontWeight: 700, color: "#44362a", minWidth: 36, textAlign: "center" }}>{pickQty}</span>
                 <button onClick={() => setPickQty(pickQty + 1)} style={btnIconBig}><Plus size={16} /></button>
               </div>
 
@@ -234,18 +235,19 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
                 rows={2} placeholder="Sem cebola, ao ponto..."
                 style={{
                   marginTop: 6, marginBottom: 18, width: "100%", padding: "11px 14px",
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(245,158,11,0.16)", borderRadius: 12,
-                  color: "#fef3c7", fontSize: 13, resize: "none",
+                  background: "#faf6f0",
+                  border: "1px solid #f3ead9", borderRadius: 12,
+                  color: "#44362a", fontSize: 13, resize: "none",
                 }}
               />
 
               <button onClick={() => addToCart(picking, pickQty, pickNotes)} style={{
                 width: "100%", padding: "14px", borderRadius: 14,
-                background: "linear-gradient(135deg, #f59e0b, #dc2626)",
-                color: "#fff8e7", fontSize: 14, fontWeight: 700, cursor: "pointer",
-                border: "1px solid rgba(245,158,11,0.4)",
+                background: "linear-gradient(135deg, #f97316, #ea580c)",
+                color: "#ffffff", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                border: "1px solid #ea580c",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 8px 24px rgba(234,88,12,0.25)",
               }}>
                 <Plus size={15} weight="bold" /> Adicionar ao pedido
               </button>
@@ -268,11 +270,11 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
               onClick={(e) => e.stopPropagation()}
               style={{ ...sheetStyle, maxHeight: "85vh", display: "flex", flexDirection: "column" }}
             >
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(252,211,77,0.2)", margin: "0 auto 14px" }} />
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: "#e8dcc4", margin: "0 auto 14px" }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: "#fef3c7" }}>Seu pedido</div>
-                  <div style={{ fontSize: 11, color: "rgba(252,211,77,0.5)", marginTop: 2 }}>Mesa {mesa} · {cartCount} item{cartCount !== 1 ? "s" : ""}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "#44362a" }}>Seu pedido</div>
+                  <div style={{ fontSize: 11, color: "#978368", marginTop: 2 }}>Mesa {mesa} · {cartCount} item{cartCount !== 1 ? "s" : ""}</div>
                 </div>
                 <button onClick={() => setShowCart(false)} style={btnIcon}><X size={13} /></button>
               </div>
@@ -281,14 +283,14 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
                 {cart.map((l, i) => (
                   <div key={i} style={{
                     padding: 12, borderRadius: 12,
-                    background: "rgba(255,255,255,0.025)",
-                    border: "1px solid rgba(245,158,11,0.10)",
+                    background: "#faf6f0",
+                    border: "1px solid #f3ead9",
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#fef3c7" }}>{l.item.name}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#44362a" }}>{l.item.name}</div>
                         {l.notes && (
-                          <div style={{ fontSize: 11, color: "rgba(252,211,77,0.55)", marginTop: 3 }}>
+                          <div style={{ fontSize: 11, color: "#978368", marginTop: 3 }}>
                             {l.notes}
                           </div>
                         )}
@@ -300,10 +302,10 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <button onClick={() => changeQty(i, -1)} style={{ ...btnIconSmall }}><Minus size={11} /></button>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7", minWidth: 22, textAlign: "center" }}>{l.qty}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#44362a", minWidth: 22, textAlign: "center" }}>{l.qty}</span>
                         <button onClick={() => changeQty(i, +1)} style={{ ...btnIconSmall }}><Plus size={11} /></button>
                       </div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d" }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#c2410c" }}>
                         {fmtBRL(l.item.price * l.qty)}
                       </div>
                     </div>
@@ -311,22 +313,22 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
                 ))}
               </div>
 
-              <div style={{ borderTop: "1px solid rgba(245,158,11,0.14)", paddingTop: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "rgba(252,211,77,0.65)", marginBottom: 4 }}>
+              <div style={{ borderTop: "1px solid #f3ead9", paddingTop: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#978368", marginBottom: 4 }}>
                   <span>Subtotal</span>
                   <span>{fmtBRL(cartTotal)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7" }}>Total</span>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#fcd34d" }}>{fmtBRL(cartTotal)}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#44362a" }}>Total</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#c2410c" }}>{fmtBRL(cartTotal)}</span>
                 </div>
                 <button onClick={sendOrder} style={{
                   width: "100%", padding: "14px", borderRadius: 14,
                   background: "linear-gradient(135deg, #10b981, #059669)",
-                  color: "#ecfdf5", fontSize: 14, fontWeight: 700, cursor: "pointer",
-                  border: "1px solid rgba(16,185,129,0.4)",
+                  color: "#ffffff", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                  border: "1px solid #059669",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  boxShadow: "0 12px 32px rgba(16,185,129,0.25)",
+                  boxShadow: "0 12px 32px rgba(16,185,129,0.22)",
                 }}>
                   <CheckCircle size={15} weight="duotone" /> Enviar para cozinha
                 </button>
@@ -341,54 +343,54 @@ export default function CardapioPage({ params }: { params: Promise<{ mesa: strin
 
 const backdrop: React.CSSProperties = {
   position: "fixed", inset: 0,
-  background: "rgba(0,0,0,0.7)",
-  backdropFilter: "blur(8px)",
+  background: "rgba(68,54,42,0.45)",
+  backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
   zIndex: 50, display: "flex", alignItems: "flex-end",
 };
 
 const sheetStyle: React.CSSProperties = {
   width: "100%",
-  background: "linear-gradient(180deg, #1a0e05 0%, #0c0907 100%)",
-  borderTop: "1px solid rgba(245,158,11,0.22)",
+  background: "#ffffff",
+  borderTop: "1px solid #f3ead9",
   borderTopLeftRadius: 24, borderTopRightRadius: 24,
   padding: "16px 20px 28px",
-  boxShadow: "0 -20px 60px rgba(0,0,0,0.5)",
+  boxShadow: "0 -20px 60px rgba(68,54,42,0.18)",
   paddingBottom: "calc(28px + env(safe-area-inset-bottom))",
 };
 
 const lblSheet: React.CSSProperties = {
-  fontSize: 10, color: "rgba(252,211,77,0.55)",
+  fontSize: 10, color: "#978368",
   textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600,
 };
 
 const btnIcon: React.CSSProperties = {
   width: 30, height: 30, borderRadius: 10,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(245,158,11,0.16)",
+  background: "#faf6f0",
+  border: "1px solid #f3ead9",
   display: "flex", alignItems: "center", justifyContent: "center",
-  color: "rgba(252,211,77,0.7)", cursor: "pointer",
+  color: "#978368", cursor: "pointer",
 };
 
 const btnIconBig: React.CSSProperties = {
   width: 44, height: 44, borderRadius: 14,
-  background: "rgba(245,158,11,0.10)",
-  border: "1px solid rgba(245,158,11,0.25)",
+  background: "#fff7ed",
+  border: "1px solid #fed7aa",
   display: "flex", alignItems: "center", justifyContent: "center",
-  color: "#fcd34d", cursor: "pointer",
+  color: "#c2410c", cursor: "pointer",
 };
 
 const btnIconSmall: React.CSSProperties = {
   width: 26, height: 26, borderRadius: 8,
-  background: "rgba(245,158,11,0.10)",
-  border: "1px solid rgba(245,158,11,0.20)",
+  background: "#fff7ed",
+  border: "1px solid #fed7aa",
   display: "flex", alignItems: "center", justifyContent: "center",
-  color: "#fcd34d", cursor: "pointer",
+  color: "#c2410c", cursor: "pointer",
 };
 
 const btnIconRed: React.CSSProperties = {
   width: 28, height: 28, borderRadius: 8,
-  background: "rgba(220,38,38,0.10)",
-  border: "1px solid rgba(220,38,38,0.20)",
+  background: "#fef2f2",
+  border: "1px solid #fecaca",
   display: "flex", alignItems: "center", justifyContent: "center",
-  color: "#fca5a5", cursor: "pointer",
+  color: "#b91c1c", cursor: "pointer",
 };

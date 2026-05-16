@@ -22,10 +22,10 @@ interface KitchenItem {
   item: OrderItem;
 }
 
-const COLS: { status: OrderItemStatus; label: string; icon: typeof Clock; color: string; next?: OrderItemStatus; nextLabel?: string }[] = [
-  { status: "pedido", label: "Novos pedidos", icon: Bell, color: "#ef4444", next: "preparando", nextLabel: "Iniciar preparo" },
-  { status: "preparando", label: "Preparando", icon: Fire, color: "#f59e0b", next: "pronto", nextLabel: "Marcar pronto" },
-  { status: "pronto", label: "Pronto p/ servir", icon: CheckCircle, color: "#10b981" },
+const COLS: { status: OrderItemStatus; label: string; icon: typeof Clock; color: string; bgSoft: string; borderSoft: string; next?: OrderItemStatus; nextLabel?: string }[] = [
+  { status: "pedido", label: "Novos pedidos", icon: Bell, color: "#dc2626", bgSoft: "#fef2f2", borderSoft: "#fecaca", next: "preparando", nextLabel: "Iniciar preparo" },
+  { status: "preparando", label: "Preparando", icon: Fire, color: "#ea580c", bgSoft: "#fff7ed", borderSoft: "#fed7aa", next: "pronto", nextLabel: "Marcar pronto" },
+  { status: "pronto", label: "Pronto p/ servir", icon: CheckCircle, color: "#059669", bgSoft: "#ecfdf5", borderSoft: "#a7f3d0" },
 ];
 
 export default function CozinhaPage() {
@@ -71,10 +71,10 @@ export default function CozinhaPage() {
         gap: isMobile ? 12 : 0,
       }}>
         <div>
-          <h1 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "#44362a", letterSpacing: "-0.02em" }}>
             Cozinha · KDS
           </h1>
-          <p style={{ fontSize: 12, color: "rgba(252,211,77,0.5)", marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: "#978368", marginTop: 4 }}>
             Acompanhamento em tempo real
           </p>
         </div>
@@ -85,13 +85,13 @@ export default function CozinhaPage() {
               return (
                 <div key={col.status} style={{
                   padding: "8px 14px", borderRadius: 12,
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(245,158,11,0.12)",
+                  background: "#ffffff",
+                  border: "1px solid #f3ead9",
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <div style={{ width: 6, height: 6, borderRadius: "50%", background: col.color }} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#fef3c7" }}>{count}</span>
-                  <span style={{ fontSize: 10, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#44362a" }}>{count}</span>
+                  <span style={{ fontSize: 10, color: "#978368", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {col.label}
                   </span>
                 </div>
@@ -114,9 +114,9 @@ export default function CozinhaPage() {
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
                   padding: "8px 12px", borderRadius: 11,
-                  background: active ? `${col.color}22` : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${active ? `${col.color}55` : "rgba(245,158,11,0.10)"}`,
-                  color: active ? col.color : "rgba(252,211,77,0.55)",
+                  background: active ? col.bgSoft : "#ffffff",
+                  border: `1px solid ${active ? col.borderSoft : "#f3ead9"}`,
+                  color: active ? col.color : "#978368",
                   fontSize: 12, fontWeight: active ? 600 : 500,
                   cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
                 }}
@@ -125,8 +125,8 @@ export default function CozinhaPage() {
                 {col.label}
                 <span style={{
                   padding: "1px 6px", borderRadius: 8,
-                  background: active ? `${col.color}33` : "rgba(245,158,11,0.10)",
-                  color: active ? col.color : "rgba(252,211,77,0.6)",
+                  background: active ? col.borderSoft : "#f3ead9",
+                  color: active ? col.color : "#978368",
                   fontSize: 10, fontWeight: 700,
                 }}>{count}</span>
               </button>
@@ -153,16 +153,17 @@ export default function CozinhaPage() {
               {!isMobile && (
                 <div style={{
                   padding: "10px 14px",
-                  background: `linear-gradient(135deg, ${col.color}22, transparent)`,
-                  border: `1px solid ${col.color}44`,
+                  background: col.bgSoft,
+                  border: `1px solid ${col.borderSoft}`,
                   borderRadius: 14, marginBottom: 12,
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <Icon size={16} weight="duotone" color={col.color} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#fef3c7" }}>{col.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#44362a" }}>{col.label}</span>
                   <span style={{
                     marginLeft: "auto", padding: "2px 8px", borderRadius: 10,
-                    background: `${col.color}22`, color: col.color,
+                    background: "#ffffff", color: col.color,
+                    border: `1px solid ${col.borderSoft}`,
                     fontSize: 11, fontWeight: 700,
                   }}>{items.length}</span>
                 </div>
@@ -185,8 +186,9 @@ export default function CozinhaPage() {
                         transition={{ duration: 0.18 }}
                         style={{
                           padding: 14, borderRadius: 14,
-                          background: urgent || veryUrgent ? "rgba(220,38,38,0.10)" : "rgba(255,255,255,0.025)",
-                          border: `1px solid ${urgent || veryUrgent ? "rgba(220,38,38,0.35)" : "rgba(245,158,11,0.12)"}`,
+                          background: urgent || veryUrgent ? "#fef2f2" : "#ffffff",
+                          border: `1px solid ${urgent || veryUrgent ? "#fecaca" : "#f3ead9"}`,
+                          boxShadow: "0 1px 3px rgba(68,54,42,0.04)",
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
@@ -194,20 +196,20 @@ export default function CozinhaPage() {
                             <div style={{
                               display: "inline-flex", alignItems: "center", gap: 5,
                               padding: "2px 8px", borderRadius: 8,
-                              background: "rgba(245,158,11,0.14)", marginBottom: 6,
+                              background: "#fff7ed", border: "1px solid #fed7aa", marginBottom: 6,
                             }}>
-                              <span style={{ fontSize: 9, color: "rgba(252,211,77,0.6)", fontWeight: 600 }}>MESA</span>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: "#fcd34d" }}>
+                              <span style={{ fontSize: 9, color: "#978368", fontWeight: 600 }}>MESA</span>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: "#c2410c" }}>
                                 {String(ki.tableNumber).padStart(2, "0")}
                               </span>
                             </div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: "#fef3c7", lineHeight: 1.3 }}>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#44362a", lineHeight: 1.3 }}>
                               {ki.item.qty}× {ki.item.name}
                             </div>
                           </div>
                           <div style={{
                             display: "flex", alignItems: "center", gap: 4,
-                            fontSize: 11, color: urgent || veryUrgent ? "#fca5a5" : "rgba(252,211,77,0.5)",
+                            fontSize: 11, color: urgent || veryUrgent ? "#dc2626" : "#978368",
                             fontWeight: 600, flexShrink: 0,
                           }}>
                             <Clock size={11} weight={urgent || veryUrgent ? "fill" : "regular"} />
@@ -219,9 +221,9 @@ export default function CozinhaPage() {
                           <div style={{
                             display: "flex", alignItems: "flex-start", gap: 6,
                             padding: "8px 10px", borderRadius: 8,
-                            background: "rgba(245,158,11,0.08)",
-                            border: "1px dashed rgba(245,158,11,0.22)",
-                            fontSize: 11.5, color: "#fde68a",
+                            background: "#fff7ed",
+                            border: "1px dashed #fed7aa",
+                            fontSize: 11.5, color: "#9a3412",
                             marginBottom: 10, lineHeight: 1.4,
                           }}>
                             <ChatText size={12} style={{ flexShrink: 0, marginTop: 1 }} />
@@ -230,7 +232,7 @@ export default function CozinhaPage() {
                         )}
 
                         {ki.item.fromCardapio && (
-                          <div style={{ marginBottom: 10, fontSize: 9, color: "#fcd34d", fontWeight: 600 }}>
+                          <div style={{ marginBottom: 10, fontSize: 9, color: "#c2410c", fontWeight: 600 }}>
                             ← pedido pelo cliente via cardápio digital
                           </div>
                         )}
@@ -240,11 +242,12 @@ export default function CozinhaPage() {
                             onClick={() => updateItemStatus(ki.orderId, ki.item.id, col.next!)}
                             style={{
                               width: "100%", padding: "9px 14px", borderRadius: 10,
-                              background: `linear-gradient(135deg, ${col.color}, ${col.color}cc)`,
-                              color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer",
-                              border: `1px solid ${col.color}66`,
+                              background: `linear-gradient(135deg, ${col.color}, ${col.color}dd)`,
+                              color: "#ffffff", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                              border: `1px solid ${col.color}`,
                               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                               whiteSpace: "nowrap",
+                              boxShadow: `0 6px 16px ${col.color}33`,
                             }}
                           >
                             <Fire size={12} weight="duotone" />
@@ -259,8 +262,8 @@ export default function CozinhaPage() {
                 {items.length === 0 && (
                   <div style={{
                     padding: "30px 20px", textAlign: "center",
-                    border: "1px dashed rgba(245,158,11,0.10)", borderRadius: 12,
-                    color: "rgba(252,211,77,0.3)", fontSize: 12,
+                    border: "1px dashed #e8dcc4", borderRadius: 12,
+                    color: "#c5b495", fontSize: 12, background: "#ffffff",
                   }}>
                     Nenhum item
                   </div>

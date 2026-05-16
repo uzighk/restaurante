@@ -10,20 +10,20 @@ import { Table, TableStatus } from "@/lib/types";
 
 const STATUS_STYLE: Record<TableStatus, { bg: string; border: string; text: string; dot: string }> = {
   livre: {
-    bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)",
-    text: "rgba(252,211,77,0.55)", dot: "rgba(255,255,255,0.3)",
+    bg: "#ffffff", border: "#f3ead9",
+    text: "#978368", dot: "#c5b495",
   },
   ocupada: {
-    bg: "rgba(245,158,11,0.10)", border: "rgba(245,158,11,0.28)",
-    text: "#fcd34d", dot: "#f59e0b",
+    bg: "#fff7ed", border: "#fed7aa",
+    text: "#c2410c", dot: "#ea580c",
   },
   aguardando: {
-    bg: "rgba(220,38,38,0.10)", border: "rgba(220,38,38,0.30)",
-    text: "#fca5a5", dot: "#ef4444",
+    bg: "#fef2f2", border: "#fecaca",
+    text: "#b91c1c", dot: "#dc2626",
   },
   fechando: {
-    bg: "rgba(16,185,129,0.10)", border: "rgba(16,185,129,0.28)",
-    text: "#6ee7b7", dot: "#10b981",
+    bg: "#ecfdf5", border: "#a7f3d0",
+    text: "#047857", dot: "#10b981",
   },
 };
 
@@ -46,7 +46,7 @@ export default function PainelPage() {
   if (!loaded) {
     return (
       <div className="bg-ambience" style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 26, height: 26, border: "2px solid rgba(245,158,11,0.2)", borderTopColor: "#f59e0b", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 26, height: 26, border: "2px solid #f3ead9", borderTopColor: "#ea580c", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     );
@@ -83,10 +83,10 @@ export default function PainelPage() {
         flexShrink: 0,
       }}>
         <div>
-          <h1 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "#44362a", letterSpacing: "-0.02em" }}>
             Painel da casa
           </h1>
-          <p style={{ fontSize: 12, color: "rgba(252,211,77,0.5)", marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: "#978368", marginTop: 4 }}>
             {ativas} mesa{ativas !== 1 ? "s" : ""} ativa{ativas !== 1 ? "s" : ""} · {livre} livre{livre !== 1 ? "s" : ""}
           </p>
         </div>
@@ -97,8 +97,8 @@ export default function PainelPage() {
           margin: isMobile ? "0 -16px" : 0,
           padding: isMobile ? "0 16px 2px" : 0,
         }}>
-          <Stat label="Ocupadas" value={counts.ocupada || 0} color="#f59e0b" />
-          <Stat label="Aguardando" value={counts.aguardando || 0} color="#ef4444" />
+          <Stat label="Ocupadas" value={counts.ocupada || 0} color="#ea580c" />
+          <Stat label="Aguardando" value={counts.aguardando || 0} color="#dc2626" />
           <Stat label="Fechando" value={counts.fechando || 0} color="#10b981" />
         </div>
       </div>
@@ -129,14 +129,14 @@ function Stat({ label, value, color }: { label: string; value: number; color: st
   return (
     <div style={{
       padding: "8px 14px", borderRadius: 12,
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(245,158,11,0.12)",
+      background: "#ffffff",
+      border: "1px solid #f3ead9",
       display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
     }}>
       <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: "#fef3c7" }}>{value}</span>
-        <span style={{ fontSize: 9, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2, whiteSpace: "nowrap" }}>{label}</span>
+        <span style={{ fontSize: 16, fontWeight: 700, color: "#44362a" }}>{value}</span>
+        <span style={{ fontSize: 9, color: "#978368", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2, whiteSpace: "nowrap" }}>{label}</span>
       </div>
     </div>
   );
@@ -161,23 +161,23 @@ function MesaCard({ table, total, pending, onClick }: {
         position: "relative", padding: 16, borderRadius: 18,
         background: s.bg, border: `1px solid ${s.border}`,
         textAlign: "left", cursor: "pointer",
-        backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
         display: "flex", flexDirection: "column", gap: 12,
         minHeight: 160,
+        boxShadow: "0 1px 3px rgba(68,54,42,0.04)",
       }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 11, color: "rgba(252,211,77,0.55)", marginBottom: 2, letterSpacing: "0.04em" }}>MESA</div>
-          <div style={{ fontSize: 32, fontWeight: 700, color: "#fef3c7", lineHeight: 1 }}>{String(table.number).padStart(2, "0")}</div>
+          <div style={{ fontSize: 11, color: "#978368", marginBottom: 2, letterSpacing: "0.04em" }}>MESA</div>
+          <div style={{ fontSize: 32, fontWeight: 700, color: "#44362a", lineHeight: 1 }}>{String(table.number).padStart(2, "0")}</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 9px", borderRadius: 20, background: "rgba(0,0,0,0.25)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 9px", borderRadius: 20, background: "rgba(255,255,255,0.7)", border: `1px solid ${s.border}` }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: s.dot }} />
           <span style={{ fontSize: 10, fontWeight: 600, color: s.text, whiteSpace: "nowrap" }}>{label}</span>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "rgba(252,211,77,0.55)", fontSize: 11 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#978368", fontSize: 11 }}>
         <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <Users size={12} /> {table.capacity}
         </span>
@@ -187,7 +187,7 @@ function MesaCard({ table, total, pending, onClick }: {
           </span>
         )}
         {pending > 0 && (
-          <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#fca5a5" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#dc2626" }}>
             <ForkKnife size={12} /> {pending} no preparo
           </span>
         )}
@@ -195,12 +195,12 @@ function MesaCard({ table, total, pending, onClick }: {
 
       <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {total > 0 ? (
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#fcd34d" }}>{fmtBRL(total)}</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#c2410c" }}>{fmtBRL(total)}</span>
         ) : (
-          <span style={{ fontSize: 11, color: "rgba(252,211,77,0.3)" }}>—</span>
+          <span style={{ fontSize: 11, color: "#c5b495" }}>—</span>
         )}
         {table.status === "livre" ? (
-          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "rgba(252,211,77,0.5)" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#978368" }}>
             <Plus size={11} weight="bold" /> Abrir
           </span>
         ) : (
