@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Users, Clock, ForkKnife, CheckCircle, Plus, QrCode } from "@phosphor-icons/react";
 import { Nav } from "@/components/Nav";
 import { useRestaurant } from "@/hooks/useRestaurant";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { Table, TableStatus } from "@/lib/types";
 
 const STATUS_STYLE: Record<TableStatus, { bg: string; border: string; text: string; dot: string }> = {
@@ -40,6 +41,7 @@ function fmtBRL(v: number) {
 export default function PainelPage() {
   const router = useRouter();
   const { tables, orders, loaded } = useRestaurant();
+  const isMobile = useIsMobile();
 
   if (!loaded) {
     return (
@@ -72,11 +74,16 @@ export default function PainelPage() {
 
       {/* Header strip */}
       <div style={{
-        padding: "20px 24px 0", display: "flex", alignItems: "center",
-        justifyContent: "space-between", flexShrink: 0,
+        padding: isMobile ? "16px 16px 0" : "20px 24px 0",
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "stretch" : "center",
+        justifyContent: "space-between",
+        gap: isMobile ? 12 : 0,
+        flexShrink: 0,
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
             Painel da casa
           </h1>
           <p style={{ fontSize: 12, color: "rgba(252,211,77,0.5)", marginTop: 4 }}>
@@ -84,7 +91,12 @@ export default function PainelPage() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{
+          display: "flex", gap: 8,
+          overflowX: isMobile ? "auto" : "visible",
+          margin: isMobile ? "0 -16px" : 0,
+          padding: isMobile ? "0 16px 2px" : 0,
+        }}>
           <Stat label="Ocupadas" value={counts.ocupada || 0} color="#f59e0b" />
           <Stat label="Aguardando" value={counts.aguardando || 0} color="#ef4444" />
           <Stat label="Fechando" value={counts.fechando || 0} color="#10b981" />
@@ -92,11 +104,11 @@ export default function PainelPage() {
       </div>
 
       {/* Tables grid */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "22px 24px 28px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "16px 16px 24px" : "22px 24px 28px" }}>
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-          gap: 14,
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(240px, 1fr))",
+          gap: 12,
         }}>
           {tables.map((table) => (
             <MesaCard
@@ -119,12 +131,12 @@ function Stat({ label, value, color }: { label: string; value: number; color: st
       padding: "8px 14px", borderRadius: 12,
       background: "rgba(255,255,255,0.03)",
       border: "1px solid rgba(245,158,11,0.12)",
-      display: "flex", alignItems: "center", gap: 8,
+      display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
     }}>
-      <div style={{ width: 6, height: 6, borderRadius: "50%", background: color }} />
+      <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
         <span style={{ fontSize: 16, fontWeight: 700, color: "#fef3c7" }}>{value}</span>
-        <span style={{ fontSize: 9, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{label}</span>
+        <span style={{ fontSize: 9, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2, whiteSpace: "nowrap" }}>{label}</span>
       </div>
     </div>
   );

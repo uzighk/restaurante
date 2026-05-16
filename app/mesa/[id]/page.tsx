@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { Nav } from "@/components/Nav";
 import { useRestaurant } from "@/hooks/useRestaurant";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { CATEGORIES, MenuItem, OrderItemStatus } from "@/lib/types";
 
 function fmtBRL(v: number) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
@@ -30,6 +31,7 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
   const { id } = use(params);
   const router = useRouter();
   const { tables, menu, getActiveOrder, addItemToTable, updateItemStatus, removeItem, closeTable, startClosing, openTable, loaded } = useRestaurant();
+  const isMobile = useIsMobile();
   const [showMenu, setShowMenu] = useState(false);
   const [confirmClose, setConfirmClose] = useState(false);
 
@@ -59,50 +61,53 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
 
       {/* Header */}
       <div style={{
-        padding: "18px 24px", flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: 14,
+        padding: isMobile ? "12px 14px" : "18px 24px", flexShrink: 0,
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "stretch" : "center",
+        justifyContent: "space-between",
+        gap: isMobile ? 12 : 14,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
           <button onClick={() => router.push("/")} style={btnIcon}>
             <ArrowLeft size={14} />
           </button>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
               Mesa {String(table.number).padStart(2, "0")}
             </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 3, fontSize: 11, color: "rgba(252,211,77,0.5)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 3, fontSize: 11, color: "rgba(252,211,77,0.5)", whiteSpace: "nowrap" }}>
               <span>{table.capacity} lugares</span>
               {table.openedAt && (
                 <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <Clock size={11} /> aberta há {fmtMin(table.openedAt)}
+                  <Clock size={11} /> {fmtMin(table.openedAt)}
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button
             onClick={() => window.open(`/cardapio/${table.number}`, "_blank")}
             title="Abrir cardápio digital da mesa em outra aba"
-            style={btnSecondary}
+            style={{ ...btnSecondary, flex: isMobile ? 1 : "0 0 auto", justifyContent: "center" }}
           >
             <QrCode size={13} weight="duotone" />
-            Cardápio mesa
+            {isMobile ? "Cardápio" : "Cardápio mesa"}
           </button>
           <button
             onClick={() => { if (!order) openTable(id); setShowMenu(true); }}
-            style={btnPrimary}
+            style={{ ...btnPrimary, flex: isMobile ? 1 : "0 0 auto", justifyContent: "center" }}
           >
             <Plus size={13} weight="bold" />
-            Adicionar item
+            {isMobile ? "Adicionar" : "Adicionar item"}
           </button>
         </div>
       </div>
 
       {/* Items list */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "8px 24px 24px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isMobile ? "8px 14px 16px" : "8px 24px 24px" }}>
         {items.length === 0 ? (
           <div style={{
             textAlign: "center", padding: "60px 20px",
@@ -132,9 +137,9 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
                     transition={{ duration: 0.18 }}
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "auto 1fr auto auto",
-                      gap: 14, alignItems: "center",
-                      padding: "12px 16px",
+                      gridTemplateColumns: "auto 1fr auto",
+                      gap: isMobile ? 10 : 14, alignItems: "center",
+                      padding: isMobile ? "11px 12px" : "12px 16px",
                       background: "rgba(255,255,255,0.025)",
                       border: "1px solid rgba(245,158,11,0.12)",
                       borderRadius: 14,
@@ -150,20 +155,8 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
                     </div>
 
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#fef3c7" }}>{it.name}</span>
-                        {it.fromCardapio && (
-                          <span style={{ fontSize: 9, color: "#fcd34d", background: "rgba(245,158,11,0.14)", padding: "1px 6px", borderRadius: 8, fontWeight: 600 }}>
-                            CLIENTE
-                          </span>
-                        )}
-                      </div>
-                      {it.notes && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(252,211,77,0.55)" }}>
-                          <ChatText size={10} /> {it.notes}
-                        </div>
-                      )}
-                      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#fef3c7", marginBottom: 4, lineHeight: 1.3 }}>{it.name}</div>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
                         <span style={{
                           display: "inline-flex", alignItems: "center", gap: 4,
                           fontSize: 9, padding: "2px 7px", borderRadius: 10,
@@ -171,22 +164,33 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
                         }}>
                           {s.label}
                         </span>
+                        {it.fromCardapio && (
+                          <span style={{ fontSize: 9, color: "#fcd34d", background: "rgba(245,158,11,0.14)", padding: "2px 7px", borderRadius: 8, fontWeight: 600 }}>
+                            CLIENTE
+                          </span>
+                        )}
                       </div>
-                    </div>
-
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d", textAlign: "right" }}>
-                      {fmtBRL(it.price * it.qty)}
-                    </div>
-
-                    <div style={{ display: "flex", gap: 5 }}>
-                      {it.status === "pronto" && (
-                        <button onClick={() => order && updateItemStatus(order.id, it.id, "entregue")} title="Marcar entregue" style={btnIconGreen}>
-                          <CheckCircle size={13} weight="duotone" />
-                        </button>
+                      {it.notes && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(252,211,77,0.55)", marginTop: 4 }}>
+                          <ChatText size={10} /> {it.notes}
+                        </div>
                       )}
-                      <button onClick={() => order && removeItem(order.id, it.id)} title="Remover" style={btnIconRed}>
-                        <Trash size={13} />
-                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d", whiteSpace: "nowrap" }}>
+                        {fmtBRL(it.price * it.qty)}
+                      </div>
+                      <div style={{ display: "flex", gap: 5 }}>
+                        {it.status === "pronto" && (
+                          <button onClick={() => order && updateItemStatus(order.id, it.id, "entregue")} title="Marcar entregue" style={btnIconGreen}>
+                            <CheckCircle size={13} weight="duotone" />
+                          </button>
+                        )}
+                        <button onClick={() => order && removeItem(order.id, it.id)} title="Remover" style={btnIconRed}>
+                          <Trash size={13} />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -199,28 +203,34 @@ export default function MesaPage({ params }: { params: Promise<{ id: string }> }
       {/* Totals + actions */}
       {items.length > 0 && (
         <div style={{
-          padding: "16px 24px", flexShrink: 0,
-          background: "rgba(12,9,7,0.75)", backdropFilter: "blur(24px)",
+          padding: isMobile ? "12px 14px calc(12px + env(safe-area-inset-bottom))" : "16px 24px",
+          flexShrink: 0,
+          background: "rgba(12,9,7,0.85)", backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
           borderTop: "1px solid rgba(245,158,11,0.14)",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "stretch" : "center",
+          justifyContent: "space-between",
+          gap: isMobile ? 10 : 16,
         }}>
           <div>
-            <div style={{ display: "flex", gap: 16, fontSize: 11, color: "rgba(252,211,77,0.55)" }}>
-              <span>Subtotal: {fmtBRL(subtotal)}</span>
-              <span>Serviço 10%: {fmtBRL(serviceFee)}</span>
+            <div style={{ display: "flex", gap: 14, fontSize: 11, color: "rgba(252,211,77,0.55)", flexWrap: "wrap" }}>
+              <span>Subtotal {fmtBRL(subtotal)}</span>
+              <span>Serviço 10% {fmtBRL(serviceFee)}</span>
             </div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#fef3c7", marginTop: 2 }}>
-              Total {fmtBRL(total)}
+            <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, color: "#fef3c7", marginTop: 2, display: "flex", alignItems: "baseline", gap: 8 }}>
+              <span style={{ fontSize: isMobile ? 12 : 13, fontWeight: 500, color: "rgba(252,211,77,0.6)" }}>Total</span>
+              {fmtBRL(total)}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             {table.status !== "fechando" && (
-              <button onClick={() => startClosing(id)} style={btnSecondary}>
+              <button onClick={() => startClosing(id)} style={{ ...btnSecondary, flex: isMobile ? 1 : "0 0 auto", justifyContent: "center", whiteSpace: "nowrap" }}>
                 <Clock size={13} /> Pedir conta
               </button>
             )}
-            <button onClick={() => setConfirmClose(true)} style={btnGreen}>
+            <button onClick={() => setConfirmClose(true)} style={{ ...btnGreen, flex: isMobile ? 1 : "0 0 auto", justifyContent: "center", whiteSpace: "nowrap" }}>
               <CreditCard size={13} weight="duotone" /> Fechar mesa
             </button>
           </div>
