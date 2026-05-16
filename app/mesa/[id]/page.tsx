@@ -1,0 +1,503 @@
+"use client";
+
+import { use, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft, Plus, Minus, Trash, Clock, ForkKnife, CheckCircle,
+  CreditCard, QrCode, X, MagnifyingGlass, ChatText,
+} from "@phosphor-icons/react";
+import { Nav } from "@/components/Nav";
+import { useRestaurant } from "@/hooks/useRestaurant";
+import { CATEGORIES, MenuItem, OrderItemStatus } from "@/lib/types";
+
+function fmtBRL(v: number) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+function fmtMin(ms: number) {
+  const min = Math.floor((Date.now() - ms) / 60000);
+  if (min < 60) return `${min}min`;
+  const h = Math.floor(min / 60); const r = min % 60;
+  return `${h}h${r > 0 ? ` ${r}min` : ""}`;
+}
+
+const STATUS_LABEL: Record<OrderItemStatus, { label: string; color: string; bg: string }> = {
+  pedido: { label: "Aguardando cozinha", color: "#fca5a5", bg: "rgba(220,38,38,0.12)" },
+  preparando: { label: "Preparando", color: "#fde68a", bg: "rgba(245,158,11,0.14)" },
+  pronto: { label: "Pronto p/ servir", color: "#6ee7b7", bg: "rgba(16,185,129,0.14)" },
+  entregue: { label: "Entregue", color: "rgba(252,211,77,0.5)", bg: "rgba(255,255,255,0.03)" },
+};
+
+export default function MesaPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const router = useRouter();
+  const { tables, menu, getActiveOrder, addItemToTable, updateItemStatus, removeItem, closeTable, startClosing, openTable, loaded } = useRestaurant();
+  const [showMenu, setShowMenu] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
+
+  if (!loaded) return <div className="bg-ambience" style={{ height: "100vh" }} />;
+
+  const table = tables.find((t) => t.id === id);
+  if (!table) {
+    return (
+      <div className="bg-ambience" style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+        <Nav />
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(252,211,77,0.5)" }}>
+          Mesa não encontrada
+        </div>
+      </div>
+    );
+  }
+
+  const order = getActiveOrder(id);
+  const items = order?.items ?? [];
+  const subtotal = items.reduce((s, it) => s + it.price * it.qty, 0);
+  const serviceFee = subtotal * 0.1;
+  const total = subtotal + serviceFee;
+
+  return (
+    <div className="bg-ambience" style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <Nav />
+
+      {/* Header */}
+      <div style={{
+        padding: "18px 24px", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        gap: 14,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => router.push("/")} style={btnIcon}>
+            <ArrowLeft size={14} />
+          </button>
+          <div>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fef3c7", letterSpacing: "-0.02em" }}>
+              Mesa {String(table.number).padStart(2, "0")}
+            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 3, fontSize: 11, color: "rgba(252,211,77,0.5)" }}>
+              <span>{table.capacity} lugares</span>
+              {table.openedAt && (
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Clock size={11} /> aberta há {fmtMin(table.openedAt)}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => window.open(`/cardapio/${table.number}`, "_blank")}
+            title="Abrir cardápio digital da mesa em outra aba"
+            style={btnSecondary}
+          >
+            <QrCode size={13} weight="duotone" />
+            Cardápio mesa
+          </button>
+          <button
+            onClick={() => { if (!order) openTable(id); setShowMenu(true); }}
+            style={btnPrimary}
+          >
+            <Plus size={13} weight="bold" />
+            Adicionar item
+          </button>
+        </div>
+      </div>
+
+      {/* Items list */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "8px 24px 24px" }}>
+        {items.length === 0 ? (
+          <div style={{
+            textAlign: "center", padding: "60px 20px",
+            border: "1px dashed rgba(245,158,11,0.18)", borderRadius: 16,
+            color: "rgba(252,211,77,0.4)",
+          }}>
+            <ForkKnife size={32} weight="duotone" color="rgba(245,158,11,0.3)" />
+            <div style={{ marginTop: 12, fontSize: 13 }}>Nenhum item na comanda</div>
+            <button
+              onClick={() => { if (!order) openTable(id); setShowMenu(true); }}
+              style={{ ...btnPrimary, marginTop: 16 }}
+            >
+              <Plus size={13} weight="bold" /> Adicionar primeiro item
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <AnimatePresence>
+              {items.map((it) => {
+                const s = STATUS_LABEL[it.status];
+                return (
+                  <motion.div
+                    key={it.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.18 }}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "auto 1fr auto auto",
+                      gap: 14, alignItems: "center",
+                      padding: "12px 16px",
+                      background: "rgba(255,255,255,0.025)",
+                      border: "1px solid rgba(245,158,11,0.12)",
+                      borderRadius: 14,
+                    }}
+                  >
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: "rgba(245,158,11,0.10)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 14, fontWeight: 700, color: "#fcd34d",
+                    }}>
+                      {it.qty}×
+                    </div>
+
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#fef3c7" }}>{it.name}</span>
+                        {it.fromCardapio && (
+                          <span style={{ fontSize: 9, color: "#fcd34d", background: "rgba(245,158,11,0.14)", padding: "1px 6px", borderRadius: 8, fontWeight: 600 }}>
+                            CLIENTE
+                          </span>
+                        )}
+                      </div>
+                      {it.notes && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(252,211,77,0.55)" }}>
+                          <ChatText size={10} /> {it.notes}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                          fontSize: 9, padding: "2px 7px", borderRadius: 10,
+                          background: s.bg, color: s.color, fontWeight: 600,
+                        }}>
+                          {s.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d", textAlign: "right" }}>
+                      {fmtBRL(it.price * it.qty)}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 5 }}>
+                      {it.status === "pronto" && (
+                        <button onClick={() => order && updateItemStatus(order.id, it.id, "entregue")} title="Marcar entregue" style={btnIconGreen}>
+                          <CheckCircle size={13} weight="duotone" />
+                        </button>
+                      )}
+                      <button onClick={() => order && removeItem(order.id, it.id)} title="Remover" style={btnIconRed}>
+                        <Trash size={13} />
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+
+      {/* Totals + actions */}
+      {items.length > 0 && (
+        <div style={{
+          padding: "16px 24px", flexShrink: 0,
+          background: "rgba(12,9,7,0.75)", backdropFilter: "blur(24px)",
+          borderTop: "1px solid rgba(245,158,11,0.14)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 16,
+        }}>
+          <div>
+            <div style={{ display: "flex", gap: 16, fontSize: 11, color: "rgba(252,211,77,0.55)" }}>
+              <span>Subtotal: {fmtBRL(subtotal)}</span>
+              <span>Serviço 10%: {fmtBRL(serviceFee)}</span>
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#fef3c7", marginTop: 2 }}>
+              Total {fmtBRL(total)}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {table.status !== "fechando" && (
+              <button onClick={() => startClosing(id)} style={btnSecondary}>
+                <Clock size={13} /> Pedir conta
+              </button>
+            )}
+            <button onClick={() => setConfirmClose(true)} style={btnGreen}>
+              <CreditCard size={13} weight="duotone" /> Fechar mesa
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Menu picker modal */}
+      <AnimatePresence>
+        {showMenu && (
+          <MenuPicker
+            menu={menu}
+            onPick={(item, qty, notes) => {
+              addItemToTable(id, item, qty, notes, false);
+            }}
+            onClose={() => setShowMenu(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Close table confirm */}
+      <AnimatePresence>
+        {confirmClose && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setConfirmClose(false)}
+            style={modalBackdrop}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }}
+              transition={{ duration: 0.14 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "linear-gradient(180deg, #1a0e05 0%, #0c0907 100%)",
+                border: "1px solid rgba(245,158,11,0.18)", borderRadius: 18,
+                padding: 24, width: "min(380px, calc(100vw - 24px))",
+                boxShadow: "0 30px 70px rgba(0,0,0,0.6)",
+              }}
+            >
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#fef3c7", marginBottom: 6 }}>Fechar mesa {table.number}?</div>
+              <div style={{ fontSize: 12, color: "rgba(252,211,77,0.55)", marginBottom: 18 }}>
+                Total {fmtBRL(total)} será cobrado. A comanda será encerrada e a mesa liberada.
+              </div>
+              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                <button onClick={() => setConfirmClose(false)} style={btnSecondary}>Cancelar</button>
+                <button onClick={() => { closeTable(id); setConfirmClose(false); router.push("/"); }} style={btnGreen}>
+                  <CheckCircle size={13} weight="duotone" /> Confirmar fechamento
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MenuPicker({ menu, onPick, onClose }: {
+  menu: MenuItem[];
+  onPick: (item: MenuItem, qty: number, notes: string) => void;
+  onClose: () => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [picking, setPicking] = useState<MenuItem | null>(null);
+  const [qty, setQty] = useState(1);
+  const [notes, setNotes] = useState("");
+
+  const filtered = menu.filter((m) =>
+    m.available &&
+    (m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.description.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function pick() {
+    if (!picking) return;
+    onPick(picking, qty, notes);
+    setPicking(null); setQty(1); setNotes("");
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={modalBackdrop}
+    >
+      <motion.div
+        initial={{ scale: 0.95, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }}
+        transition={{ duration: 0.16 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "linear-gradient(180deg, #1a0e05 0%, #0c0907 100%)",
+          border: "1px solid rgba(245,158,11,0.18)", borderRadius: 20,
+          width: "min(640px, calc(100vw - 24px))", maxHeight: "calc(100vh - 32px)",
+          display: "flex", flexDirection: "column", overflow: "hidden",
+          boxShadow: "0 30px 70px rgba(0,0,0,0.6)",
+        }}
+      >
+        <div style={{ padding: "18px 20px 12px", borderBottom: "1px solid rgba(245,158,11,0.10)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#fef3c7" }}>
+            {picking ? `Adicionar: ${picking.name}` : "Adicionar item ao pedido"}
+          </div>
+          <button onClick={onClose} style={btnIcon}>
+            <X size={13} />
+          </button>
+        </div>
+
+        {!picking && (
+          <div style={{ padding: "12px 20px 0", flexShrink: 0 }}>
+            <div style={{ position: "relative" }}>
+              <MagnifyingGlass size={13} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(252,211,77,0.4)" }} />
+              <input
+                value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar item do cardápio..."
+                style={{
+                  width: "100%", padding: "10px 14px 10px 36px",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(245,158,11,0.14)", borderRadius: 12,
+                  color: "#fef3c7", fontSize: 13,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div style={{ flex: 1, overflowY: "auto", padding: 16 }}>
+          {picking ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ fontSize: 12, color: "rgba(252,211,77,0.6)" }}>{picking.description}</div>
+              <div>
+                <label style={lblStyle}>Quantidade</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 6 }}>
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} style={btnIconBig}>
+                    <Minus size={14} />
+                  </button>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: "#fef3c7", minWidth: 30, textAlign: "center" }}>{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} style={btnIconBig}>
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label style={lblStyle}>Observações (sem cebola, ponto da carne...)</label>
+                <textarea
+                  value={notes} onChange={(e) => setNotes(e.target.value)}
+                  rows={2} placeholder="Opcional"
+                  style={{
+                    marginTop: 6, width: "100%", padding: "10px 12px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(245,158,11,0.14)", borderRadius: 10,
+                    color: "#fef3c7", fontSize: 12.5, resize: "none",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#fcd34d" }}>
+                  {fmtBRL(picking.price * qty)}
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => setPicking(null)} style={btnSecondary}>Voltar</button>
+                  <button onClick={pick} style={btnPrimary}>
+                    <Plus size={13} weight="bold" /> Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+              {CATEGORIES.map((cat) => {
+                const items = filtered.filter((m) => m.category === cat.id);
+                if (items.length === 0) return null;
+                return (
+                  <div key={cat.id}>
+                    <div style={{ fontSize: 10, color: "rgba(252,211,77,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
+                      {cat.label}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {items.map((m) => (
+                        <button
+                          key={m.id}
+                          onClick={() => setPicking(m)}
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "11px 14px", borderRadius: 12,
+                            background: "rgba(255,255,255,0.025)",
+                            border: "1px solid rgba(245,158,11,0.10)",
+                            color: "#fef3c7", cursor: "pointer", textAlign: "left",
+                            transition: "all 0.12s",
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(245,158,11,0.08)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.25)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.10)"; }}
+                        >
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 600 }}>{m.name}</div>
+                            <div style={{ fontSize: 11, color: "rgba(252,211,77,0.5)", marginTop: 2 }}>{m.description}</div>
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d", flexShrink: 0, marginLeft: 12 }}>
+                            {fmtBRL(m.price)}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+const btnPrimary: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: 6,
+  padding: "9px 16px", borderRadius: 12,
+  background: "linear-gradient(135deg, #f59e0b, #dc2626)",
+  color: "#fff8e7", fontSize: 12.5, fontWeight: 600, cursor: "pointer",
+  border: "1px solid rgba(245,158,11,0.4)",
+  boxShadow: "0 8px 24px rgba(220,38,38,0.25)",
+};
+
+const btnSecondary: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: 6,
+  padding: "9px 14px", borderRadius: 12,
+  background: "rgba(255,255,255,0.04)",
+  color: "#fef3c7", fontSize: 12, fontWeight: 500, cursor: "pointer",
+  border: "1px solid rgba(245,158,11,0.18)",
+};
+
+const btnGreen: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: 6,
+  padding: "9px 14px", borderRadius: 12,
+  background: "linear-gradient(135deg, #10b981, #059669)",
+  color: "#ecfdf5", fontSize: 12.5, fontWeight: 600, cursor: "pointer",
+  border: "1px solid rgba(16,185,129,0.4)",
+  boxShadow: "0 8px 24px rgba(16,185,129,0.2)",
+};
+
+const btnIcon: React.CSSProperties = {
+  width: 34, height: 34, borderRadius: 10,
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(245,158,11,0.16)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  color: "rgba(252,211,77,0.7)", cursor: "pointer",
+};
+
+const btnIconBig: React.CSSProperties = {
+  width: 40, height: 40, borderRadius: 12,
+  background: "rgba(245,158,11,0.10)",
+  border: "1px solid rgba(245,158,11,0.25)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  color: "#fcd34d", cursor: "pointer",
+};
+
+const btnIconRed: React.CSSProperties = {
+  width: 28, height: 28, borderRadius: 8,
+  background: "rgba(220,38,38,0.10)",
+  border: "1px solid rgba(220,38,38,0.20)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  color: "#fca5a5", cursor: "pointer",
+};
+
+const btnIconGreen: React.CSSProperties = {
+  width: 28, height: 28, borderRadius: 8,
+  background: "rgba(16,185,129,0.10)",
+  border: "1px solid rgba(16,185,129,0.25)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  color: "#6ee7b7", cursor: "pointer",
+};
+
+const lblStyle: React.CSSProperties = {
+  fontSize: 10, color: "rgba(252,211,77,0.55)",
+  textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600,
+};
+
+const modalBackdrop: React.CSSProperties = {
+  position: "fixed", inset: 0,
+  background: "rgba(0,0,0,0.7)",
+  backdropFilter: "blur(8px)",
+  zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center",
+};
